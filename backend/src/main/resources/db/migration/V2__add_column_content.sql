@@ -1,0 +1,1 @@
+ALTER TABLE document_chunk ADD COLUMN content TEXT NOT NULL;
