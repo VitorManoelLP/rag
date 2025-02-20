@@ -33,9 +33,9 @@ public class DocumentService {
                 .name(multipartFile.getOriginalFilename())
                 .build();
 
-//        if (documentRepository.existsByHash(document.getHash())) {
-//            throw new IllegalArgumentException("This document has already been uploaded");
-//        }
+        if (documentRepository.existsByHash(document.getHash())) {
+            throw new IllegalArgumentException("This document has already been uploaded");
+        }
 
         final List<Chunk> chunks = embeddingProcessorService.getChunksTextFromDocument(content);
 
