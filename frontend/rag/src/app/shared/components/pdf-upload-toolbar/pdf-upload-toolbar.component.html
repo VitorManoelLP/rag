@@ -48,6 +48,20 @@
       </ng-template>
     </div>
 
+    <div class="upload-progress-messages" *ngIf="isUploading">
+      <div class="message-container">
+        <div class="current-message" *ngIf="showCurrentMessage">
+          {{ currentMessage }}
+        </div>
+        <div class="exiting-message" *ngIf="exitingMessage">
+          {{ exitingMessage }}
+        </div>
+        <div class="next-message-preview" *ngIf="nextMessage">
+          {{ nextMessage }}
+        </div>
+      </div>
+    </div>
+
     <div class="toolbar-actions">
 
       <button pButton type="button"

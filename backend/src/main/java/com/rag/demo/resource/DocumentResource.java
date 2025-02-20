@@ -6,6 +6,7 @@ import com.rag.demo.repository.DocumentRepository;
 import com.rag.demo.service.AnalyzeDocumentService;
 import com.rag.demo.service.DocumentService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,9 +23,11 @@ public class DocumentResource {
     private final DocumentRepository documentRepository;
 
     @PostMapping
+    @SneakyThrows
     @ResponseStatus(HttpStatus.CREATED)
     public void processDocument(@RequestParam("file") MultipartFile file) {
-        documentService.processDocument(file);
+        final byte[] content = file.getInputStream().readAllBytes();
+        documentService.processDocument(file.getOriginalFilename(), content);
     }
 
     @PostMapping("/answer")

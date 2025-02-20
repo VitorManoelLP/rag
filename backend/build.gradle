@@ -41,6 +41,7 @@ dependencies {
 	implementation 'org.springframework.ai:spring-ai-pgvector-store-spring-boot-starter'
 	implementation 'org.hibernate:hibernate-vector:6.6.8.Final'
 	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'

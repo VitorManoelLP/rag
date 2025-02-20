@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PageParameter } from "../../shared/model/page-parameter.model";
 import { DocumentService } from "../../shared/service/document.service";
 import { TableModule } from 'primeng/table';
@@ -6,12 +6,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { SidebarModule } from 'primeng/sidebar';
 import { PaginatorModule } from 'primeng/paginator';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, DOCUMENT } from '@angular/common';
 import { HttpClientAdapter } from '../../shared/http/http-client.adapter';
-import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { SidebarInsideComponent } from '../../shared/components/sidebar-inside/sidebar-inside.component';
-import { Tooltip, TooltipModule } from 'primeng/tooltip';
+import { TooltipModule } from 'primeng/tooltip';
 import { FileSizePipe } from '../../shared/directive/file-size.pipe';
 import { Page } from '../../shared/model/page.model';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -46,6 +44,8 @@ import { PdfUploadToolbarComponent } from '../../shared/components/pdf-upload-to
 })
 export class DocumentsComponent implements OnInit {
 
+  @ViewChild('sidebar') sidebar!: SidebarInsideComponent;
+
   documents: any[] = [];
   selectedDocument: any | null = null;
   sidebarVisible: boolean = false;
@@ -76,33 +76,36 @@ export class DocumentsComponent implements OnInit {
   }
 
   showDetails(document: Document) {
-    this.selectedDocument = document;
-    this.sidebarVisible = !this.sidebarVisible;
+
+    if (!this.selectedDocument || JSON.stringify(this.selectedDocument) == JSON.stringify(document)) {
+      this.sidebarVisible = !this.sidebarVisible;
+      this.sidebar.toggleSidebar();
+    }
+
+    !this.sidebarVisible ? this.selectedDocument = undefined : this.selectedDocument = document;
   }
 
   handleFileUploaded(file: File) {
+    this.documentService.upload(file).subscribe();
+  }
 
-    const newDocument = {
-      id: Date.now().toString(),
-      name: file.name,
-      size: file.size,
-      createdAt: new Date()
-    };
+  cancelUpload() {
+    this.showUploadToolbar = false;
+  }
 
-    this.documents = [newDocument, ...this.documents];
-    this.totalRecords++;
+  fetch() {
 
     this.showUploadToolbar = false;
 
     this.messageService.add({
       severity: 'success',
-      summary: 'Document Uploaded',
-      detail: `${file.name} has been successfully added`
+      summary: 'Documento salvo',
+      detail: `Documento foi salvo com sucesso`
     });
-  }
 
-  cancelUpload() {
-    this.showUploadToolbar = false;
+    this.page = PageParameter.newInstance();
+
+    this.loadDocuments();
   }
 
 }

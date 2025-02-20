@@ -15,7 +15,8 @@
   </div>
 
   <app-pdf-upload-toolbar *ngIf="showUploadToolbar"
-                          (fileUploaded)="handleFileUploaded($event)"
+                          (fileUpload)="handleFileUploaded($event)"
+                          (uploadFinished)="fetch()"
                           (cancelUpload)="cancelUpload()"></app-pdf-upload-toolbar>
 
   <div class="modern-document-container">
@@ -39,7 +40,7 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-document>
-        <tr (click)="showDetails(document); sidebar.toggleSidebar()" class="document-row">
+        <tr (click)="showDetails(document)" class="document-row">
           <td>
             <div class="document-item">
               <div class="document-icon-wrapper">
@@ -68,7 +69,7 @@
   </div>
 </div>
 
-<sidebar-inside [title]="'Detalhes'" class="modern-document-sidebar" [hidden]="!sidebarVisible" #sidebar>
+<sidebar-inside [title]="'Detalhes'" class="modern-document-sidebar" [hidden]="!sidebarVisible" #sidebar (onClose)="sidebarVisible = false; selectedDocument = undefined">
   <ng-container *ngIf="selectedDocument">
     <div class="modern-sidebar-header">
       <div class="header-doc-info">
@@ -80,8 +81,6 @@
           <span class="document-type">PDF Document</span>
         </div>
       </div>
-      <button pButton icon="pi pi-times" (click)="sidebarVisible = false"
-              class="p-button-rounded p-button-text p-button-plain close-button"></button>
     </div>
 
     <div class="modern-sidebar-content">

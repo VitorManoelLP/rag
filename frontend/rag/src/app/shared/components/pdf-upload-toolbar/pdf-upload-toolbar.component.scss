@@ -166,6 +166,77 @@
   }
 }
 
+/* Progress Messages styling */
+.upload-progress-messages {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+  min-height: 5rem;
+  overflow: hidden;
+
+  .message-container {
+    position: relative;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .current-message {
+    color: #1a202c;
+    font-size: 1.1rem;
+    font-weight: 500;
+    position: absolute;
+    width: 100%;
+    animation: slideInDown 0.75s ease-in-out;
+  }
+
+  .exiting-message {
+    color: #1a202c;
+    font-size: 1.1rem;
+    font-weight: 500;
+    position: absolute;
+    width: 100%;
+    animation: slideOutDown 0.75s ease-in-out;
+    opacity: 0;
+  }
+
+  .next-message-preview {
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    opacity: 0.25;
+    font-weight: 400;
+    font-style: italic;
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
 .toolbar-actions {
   display: flex;
   justify-content: flex-end;

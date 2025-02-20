@@ -1,4 +1,4 @@
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -28,11 +28,17 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class SidebarInsideComponent {
 
   @Input({ required: true }) title!: string;
+  @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
 
   sidebarOpen = false;
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  close() {
+    this.toggleSidebar();
+    this.onClose.emit();
   }
 
   @HostBinding('@sidebarAnimation')

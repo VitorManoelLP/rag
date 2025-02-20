@@ -13,4 +13,12 @@ export class DocumentService {
         return this.httpClient.findAll(HttpRequest.ofResource('/api/documents').withPageParameter(page));
     }
 
+    public upload(file: File) {
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      return this.httpClient.post(HttpRequest.ofResourceAndBody('/api/documents', formData))
+    }
+
 }
