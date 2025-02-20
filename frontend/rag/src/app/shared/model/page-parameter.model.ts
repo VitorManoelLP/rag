@@ -15,7 +15,7 @@ export class PageParameter {
   }
 
   static newInstance() {
-    return new PageParameter(0, 20);
+    return new PageParameter(0, 10);
   }
 
   withSort(sort: { field: string; order: 'asc' | 'desc' }): PageParameter {

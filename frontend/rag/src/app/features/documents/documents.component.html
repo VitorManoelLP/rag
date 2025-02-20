@@ -24,9 +24,9 @@
     <p-table
       [value]="documents"
       [paginator]="true"
+      [lazy]="true"
       [rows]="page.size"
       [totalRecords]="totalRecords"
-      [first]="page.page"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="{first} de {last} de {totalRecords} documentos"
       [rowsPerPageOptions]="[10, 25, 50]"
