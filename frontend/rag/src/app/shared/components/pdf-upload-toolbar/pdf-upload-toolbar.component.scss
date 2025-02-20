@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:host {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  display: block;
+}
+
+.pdf-upload-toolbar {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin: 1.5rem auto;
+  max-width: 700px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.toolbar-container {
+  padding: 2rem;
+}
+
+.toolbar-section {
+  margin-bottom: 1.5rem;
+
+  .toolbar-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a202c;
+    line-height: 1.3;
+  }
+
+  .toolbar-subtitle {
+    font-size: 0.95rem;
+    color: #718096;
+    margin: 0;
+  }
+}
+
+.upload-section {
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
+  transition: all 0.2s ease;
+  background-color: #f8fafc;
+  position: relative;
+
+  &.drag-over {
+    border-color: #00d300;
+    background-color: rgba(0, 211, 0, 0.05);
+    transform: scale(1.01);
+  }
+
+  &.has-file {
+    border-style: solid;
+    border-color: #e2e8f0;
+    background-color: white;
+    padding: 1.5rem;
+  }
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  .pi-cloud-upload {
+    font-size: 3rem;
+    color: #cbd5e0;
+    margin-bottom: 1.25rem;
+  }
+
+  .upload-text {
+    font-size: 1.05rem;
+    color: #4a5568;
+    margin: 0 0 1.25rem;
+  }
+
+  .file-input-wrapper {
+    margin-bottom: 1rem;
+  }
+
+  .browse-button {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-color: #00d300;
+    color: #00d300;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: rgba(0, 211, 0, 0.1);
+      border-color: #00c200;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+
+  .file-limits {
+    font-size: 0.85rem;
+    color: #a0aec0;
+    margin: 0;
+  }
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+
+  .file-preview {
+    width: 48px;
+    height: 60px;
+    background-color: #fff5f5;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.25rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border: 1px solid #fed7d7;
+
+    i {
+      font-size: 1.5rem;
+      color: #e53e3e;
+    }
+  }
+
+  .file-details {
+    flex: 1;
+    min-width: 0;
+
+    .file-name {
+      margin: 0 0 0.25rem;
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: #2d3748;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-info {
+      font-size: 0.875rem;
+      color: #718096;
+      margin: 0;
+    }
+  }
+
+  .remove-file-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-left: 1rem;
+
+    &:hover {
+      background-color: rgba(229, 62, 62, 0.1);
+    }
+  }
+}
+
+.toolbar-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+
+  .cancel-button {
+    padding: 0.75rem 1.5rem;
+    border-color: #e2e8f0;
+    color: #4a5568;
+    font-weight: 500;
+
+    &:hover {
+      background-color: #f7fafc;
+      border-color: #cbd5e0;
+    }
+  }
+
+  .upload-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #00d300;
+    border-color: #00d300;
+    color: white;
+    font-weight: 600;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: #00c200;
+      border-color: #00c200;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      background-color: #9ae6af;
+      border-color: #9ae6af;
+      cursor: not-allowed;
+    }
+
+    .p-button-icon {
+      font-size: 0.9rem;
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .pdf-upload-toolbar {
+    margin: 1rem;
+    max-width: 100%;
+  }
+
+  .toolbar-container {
+    padding: 1.5rem;
+  }
+
+  .upload-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .toolbar-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

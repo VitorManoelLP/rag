@@ -1,8 +1,11 @@
 package com.rag.demo.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +28,13 @@ public class Document {
 
     private String hash;
 
+    private long size;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @JsonIgnoreProperties(value = {"chunk", "content"})
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "id_document")
     private final List<DocumentChunk> chunks = new ArrayList<>();

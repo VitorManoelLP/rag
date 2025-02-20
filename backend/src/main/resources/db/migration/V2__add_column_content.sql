@@ -1,1 +1,1 @@
-ALTER TABLE document_chunk ADD COLUMN content TEXT NOT NULL;
+ALTER TABLE document_chunk ADD COLUMN IF NOT EXISTS content TEXT NOT NULL;

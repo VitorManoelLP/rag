@@ -1,0 +1,67 @@
+<div class="pdf-upload-toolbar">
+  <div class="toolbar-container">
+    <div class="toolbar-section">
+      <h2 class="toolbar-title">Upload Documento</h2>
+      <p class="toolbar-subtitle">Selecione o PDF para fazer upload</p>
+    </div>
+
+    <div class="upload-section"
+         [ngClass]="{'has-file': selectedFile, 'drag-over': isDragging}"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event)">
+
+      <ng-container *ngIf="!selectedFile; else fileSelected">
+        <div class="upload-placeholder">
+          <i class="pi pi-cloud-upload"></i>
+          <p class="upload-text">Arraste e solte seu PDF aqui ou</p>
+          <div class="file-input-wrapper">
+
+            <button pButton type="button"
+                    label="Navegar pelos arquivos"
+                    class="p-button-outlined browse-button"
+                    (click)="fileInput.click()"></button>
+
+            <input #fileInput type="file"
+                   accept="application/pdf"
+                   (change)="onFileSelected($event)"
+                   style="display: none">
+
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #fileSelected>
+        <div class="selected-file">
+          <div class="file-preview">
+            <i class="pi pi-file-pdf"></i>
+          </div>
+          <div class="file-details">
+            <h3 class="file-name">{{ selectedFile?.name }}</h3>
+            <p class="file-info" *ngIf="selectedFile && selectedFile?.size">{{ selectedFile.size | fileSize }} • PDF Document</p>
+          </div>
+          <button pButton type="button"
+                  icon="pi pi-times"
+                  class="p-button-rounded p-button-text p-button-danger remove-file-btn"
+                  (click)="removeFile()"></button>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="toolbar-actions">
+
+      <button pButton type="button"
+              label="Cancel"
+              class="p-button-outlined cancel-button"
+              (click)="cancel()"></button>
+
+      <button pButton type="button"
+              label="Upload"
+              [disabled]="!selectedFile || isUploading"
+              [loading]="isUploading"
+              class="p-button upload-button"
+              (click)="uploadFile()"></button>
+
+    </div>
+  </div>
+</div>

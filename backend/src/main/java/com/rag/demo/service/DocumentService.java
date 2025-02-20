@@ -30,6 +30,7 @@ public class DocumentService {
 
         final Document document = Document.builder()
                 .hash(DigestUtils.sha256Hex(content))
+                .size(content.length)
                 .name(multipartFile.getOriginalFilename())
                 .build();
 

@@ -1,0 +1,132 @@
+.sidebar {
+  position: fixed;
+  right: 0;
+  top: 30px;
+  height: calc(100% - 30px);
+  width: 25px;
+  background-color: var(--draft);
+  border-left: 1px solid #e0e0e0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  transform: translateX(0);
+  opacity: 1;
+
+  &[hidden] {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  &:hover:not(.open) {
+    background-color: #f0f2f5;
+  }
+
+  &.open {
+    width: 900px;
+    background-color: #ffffff;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar-toggle {
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform-origin: 0 0;
+    transform: rotate(-90deg) translateX(-50%);
+    padding: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--module-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    opacity: 1;
+
+    &:hover {
+      color: var(--module-color-dark);
+    }
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s 0.3s;
+
+    h2 {
+      margin: 0;
+      color: var(--module-color);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .close-button {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--module-color);
+      transition: transform 0.2s ease;
+
+      &:hover {
+        color: var(--module-color-dark);
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .sidebar-content {
+    opacity: 0;
+    visibility: hidden;
+    padding: 20px;
+    transition: opacity 0.3s ease, visibility 0s 0.3s;
+    height: calc(100% - 60px);
+    overflow-y: auto;
+  }
+
+  &.open {
+    .sidebar-toggle {
+      opacity: 0;
+    }
+
+    .sidebar-content,
+    .sidebar-header {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.3s ease 0.2s, visibility 0s 0s;
+    }
+  }
+}
+
+// Animation for the modern-document-sidebar
+.modern-document-sidebar {
+  &.ng-animating {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &.ng-enter {
+    opacity: 0;
+    transform: translateX(100%);
+
+    &.ng-enter-active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  &.ng-leave {
+    opacity: 1;
+    transform: translateX(0);
+
+    &.ng-leave-active {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+}

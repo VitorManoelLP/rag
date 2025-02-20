@@ -1,0 +1,121 @@
+<div class="documents-page">
+
+  <div class="header-section">
+    <div class="title-area">
+      <h1 class="page-title">Documentos</h1>
+      <span class="document-count">{{totalRecords}} documentos disponíveis</span>
+    </div>
+    <div class="actions-area">
+      <button pButton
+              type="button"
+              label="Novo Documento"
+              icon="pi pi-plus"
+              class="new-document-btn" (click)="showUploadToolbar = true"></button>
+    </div>
+  </div>
+
+  <app-pdf-upload-toolbar *ngIf="showUploadToolbar"
+                          (fileUploaded)="handleFileUploaded($event)"
+                          (cancelUpload)="cancelUpload()"></app-pdf-upload-toolbar>
+
+  <div class="modern-document-container">
+
+    <p-table
+      [value]="documents"
+      [paginator]="true"
+      [rows]="page.size"
+      [totalRecords]="totalRecords"
+      [first]="page.page"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} de {last} de {totalRecords} documentos"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      (onPage)="onPageChange($event)"
+      styleClass="modern-document-table">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="name-column">Nome</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-document>
+        <tr (click)="showDetails(document); sidebar.toggleSidebar()" class="document-row">
+          <td>
+            <div class="document-item">
+              <div class="document-icon-wrapper">
+                <i class="pi pi-file-pdf"></i>
+              </div>
+              <span class="document-name">{{ document.name }}</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="paginatorleft">
+        <div class="pagination-info">
+          <span>Total: {{totalRecords}} documentos</span>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <div class="empty-state">
+          <i class="pi pi-folder-open empty-icon"></i>
+          <h3>Nenhum documento encontrado</h3>
+          <p>Aperte em Adicionar Documento para realizar upload de um novo</p>
+        </div>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<sidebar-inside [title]="'Detalhes'" class="modern-document-sidebar" [hidden]="!sidebarVisible" #sidebar>
+  <ng-container *ngIf="selectedDocument">
+    <div class="modern-sidebar-header">
+      <div class="header-doc-info">
+        <div class="document-preview">
+          <i class="pi pi-file-pdf"></i>
+        </div>
+        <div class="document-title-area">
+          <h2 class="document-title">{{ selectedDocument.name }}</h2>
+          <span class="document-type">PDF Document</span>
+        </div>
+      </div>
+      <button pButton icon="pi pi-times" (click)="sidebarVisible = false"
+              class="p-button-rounded p-button-text p-button-plain close-button"></button>
+    </div>
+
+    <div class="modern-sidebar-content">
+      <h3 class="section-title">Informações do documento</h3>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span class="detail-label">Tamanho</span>
+          <span class="detail-value">{{ selectedDocument.size | fileSize }}</span>
+        </div>
+
+        <div class="detail-item full-width" *ngIf="selectedDocument.createdAt">
+          <span class="detail-label">Criado em</span>
+          <span class="detail-value">{{ selectedDocument.createdAt | date:'dd MMM yyyy, HH:mm' }}</span>
+        </div>
+
+      </div>
+
+      <h3 class="section-title" *ngIf="selectedDocument.hash">Detalhes técnicos</h3>
+
+      <div class="detail-grid technical" *ngIf="selectedDocument.hash">
+
+        <div class="detail-item full-width" *ngIf="selectedDocument.hash">
+          <span class="detail-label">Hash</span>
+          <div class="hash-container">
+            <span class="detail-value monospace hash-value">{{ selectedDocument.hash }}</span>
+            <button pButton icon="pi pi-copy" class="p-button-rounded p-button-text p-button-sm"
+                    pTooltip="Copiar hash" tooltipPosition="left"></button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+</sidebar-inside>

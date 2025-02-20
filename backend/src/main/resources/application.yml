@@ -1,4 +1,6 @@
 spring:
+  flyway:
+    enabled: false
   datasource:
     url: jdbc:postgresql://localhost:55432/postgres
     username: postgres

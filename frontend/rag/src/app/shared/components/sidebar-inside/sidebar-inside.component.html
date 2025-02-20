@@ -1,0 +1,16 @@
+<div class="sidebar" [class.open]="sidebarOpen">
+  <div class="sidebar-toggle" (click)="toggleSidebar()">
+    {{  title }}
+  </div>
+  <div class="sidebar-header">
+    <h2>{{ title }}</h2>
+    <button class="close-button" (click)="toggleSidebar()">
+      <i class="pi pi-times"></i>
+    </button>
+  </div>
+  <div class="sidebar-content">
+    <div class="search-container">
+      <ng-content/>
+    </div>
+  </div>
+</div>
