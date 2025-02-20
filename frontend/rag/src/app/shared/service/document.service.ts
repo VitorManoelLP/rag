@@ -21,4 +21,8 @@ export class DocumentService {
       return this.httpClient.post(HttpRequest.ofResourceAndBody('/api/documents', formData))
     }
 
+    public answer(question: string) {
+      return this.httpClient.post(HttpRequest.ofResourceAndBody('/api/documents/answer', question))
+    }
+
 }

@@ -12,12 +12,12 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'documents',
+    redirectTo: 'assistant',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: 'documents',
+    redirectTo: 'assistant',
     pathMatch: 'full'
   }
 ];

@@ -65,11 +65,13 @@
           <p>Aperte em Adicionar Documento para realizar upload de um novo</p>
         </div>
       </ng-template>
+
     </p-table>
   </div>
 </div>
 
 <sidebar-inside [title]="'Detalhes'" class="modern-document-sidebar" [hidden]="!sidebarVisible" #sidebar (onClose)="sidebarVisible = false; selectedDocument = undefined">
+
   <ng-container *ngIf="selectedDocument">
     <div class="modern-sidebar-header">
       <div class="header-doc-info">

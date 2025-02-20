@@ -4,6 +4,9 @@ import { TextareaModule } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
+import { DocumentService } from '../../shared/service/document.service';
+import { HttpClientAdapter } from '../../shared/http/http-client.adapter';
+import { ChatHistoryService } from '../../shared/service/chat-history.service';
 
 @Component({
   selector: 'app-assistant',
@@ -15,17 +18,52 @@ import { ButtonModule } from 'primeng/button';
     FormsModule,
     ProgressSpinnerModule,
   ],
+  providers: [
+    DocumentService,
+    HttpClientAdapter,
+    ChatHistoryService
+  ],
   styleUrl: './assistant.component.scss'
 })
-export class AssistantComponent implements AfterViewChecked {
+export class AssistantComponent implements AfterViewChecked, OnInit {
 
   messages: any[] = [];
   newMessage: string = '';
   isProcessing: boolean = false;
+  typingMessage: any = null;
+  typingIndex: number = 0;
+  typingSpeed: number = 10;
+  typingInterval: any = null;
 
   @ViewChild('chatContainer') private chatContainer!: ElementRef;
 
-  constructor() { }
+  constructor(private documentService: DocumentService, private chatHistoryService: ChatHistoryService) { }
+
+  ngOnInit(): void {
+    this.chatHistoryService.findAll()
+      .subscribe((historical: any[]) => {
+
+        historical.forEach(history => {
+          this.addUserMessage(history.userMessage);
+
+          const answer = history.botMessage;
+
+          this.typingMessage = {
+            content: answer.value,
+            fullContent: answer.value,
+            sender: 'bot',
+            timestamp: new Date(),
+            usedDocuments: answer.usedDocuments,
+            confidence: answer.confidence,
+            isTyping: true
+          };
+
+          this.messages.push(this.typingMessage);
+
+        });
+
+      });
+  }
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -41,26 +79,17 @@ export class AssistantComponent implements AfterViewChecked {
   sendMessage(): void {
     if (this.newMessage.trim() === '') return;
 
-    // Add user message
     this.addUserMessage(this.newMessage);
     const userQuery = this.newMessage;
     this.newMessage = '';
 
-    // Show processing state
     this.isProcessing = true;
 
-    // Simulate bot response after delay
-    setTimeout(() => {
-      // Create a more realistic response that looks like it came from document analysis
-      const exampleResponse = `Based on my analysis of the provided documents, the answer to your query "${userQuery}" is:
-
-The terms of service require a minimum notice period of 30 days for contract termination. According to section 8.2 of the agreement, all outstanding payments must be settled before the account can be closed.
-
-You can initiate the cancellation process through your account dashboard or by contacting customer support at support@example.com.`;
-
-      this.addBotMessage(exampleResponse);
-      this.isProcessing = false;
-    }, 1500);
+    this.documentService.answer(userQuery)
+      .subscribe(answer => {
+        this.isProcessing = false;
+        this.startTypingEffect(answer);
+      });
   }
 
   addUserMessage(content: string): void {
@@ -71,22 +100,40 @@ You can initiate the cancellation process through your account dashboard or by c
     });
   }
 
-  addBotMessage(content: string): void {
-    // Simulate parsing the response from backend
-    // In a real app, this would come from your API
-    const mockAnswer = {
-      value: content,
-      usedDocuments: ["document1.pdf", "document2.pdf"],
-      confidence: 0.92
-    };
+  startTypingEffect(answer: any): void {
 
-    this.messages.push({
-      content: mockAnswer.value,
+    this.typingMessage = {
+      content: '',
+      fullContent: answer.value,
       sender: 'bot',
       timestamp: new Date(),
-      usedDocuments: mockAnswer.usedDocuments,
-      confidence: mockAnswer.confidence
-    });
+      usedDocuments: answer.usedDocuments,
+      confidence: answer.confidence,
+      isTyping: true
+    };
+
+    this.messages.push(this.typingMessage);
+
+    this.typingIndex = 0;
+    if (this.typingInterval) {
+      clearInterval(this.typingInterval);
+    }
+    this.typingInterval = setInterval(() => this.typeNextChunk(), 25);
+  }
+
+  typeNextChunk(): void {
+    if (!this.typingMessage) return;
+    const fullText = this.typingMessage.fullContent;
+    const nextIndex = Math.min(this.typingIndex + this.typingSpeed, fullText.length);
+
+    this.typingMessage.content = fullText.substring(0, nextIndex);
+    this.typingIndex = nextIndex;
+
+    if (nextIndex >= fullText.length) {
+      clearInterval(this.typingInterval);
+      this.typingMessage.isTyping = false;
+      this.typingMessage = null;
+    }
   }
 
   handleKeyUp(event: KeyboardEvent): void {

@@ -1,8 +1,10 @@
 package com.rag.demo.service;
 
+import com.rag.demo.domain.ChatHistory;
 import com.rag.demo.domain.Document;
 import com.rag.demo.dto.Answer;
 import com.rag.demo.dto.ChunkProjection;
+import com.rag.demo.repository.ChatHistoryRepository;
 import com.rag.demo.repository.DocumentChunkRepository;
 import com.rag.demo.repository.DocumentRepository;
 import com.rag.demo.util.ChunkUtils;
@@ -26,6 +28,7 @@ public class AnalyzeDocumentService {
     private final ChatModelService chatModelService;
     private final DocumentChunkRepository documentChunkRepository;
     private final DocumentRepository documentRepository;
+    private final ChatHistoryRepository chatHistoryRepository;
 
     public Answer analyze(String question) {
 
@@ -54,7 +57,14 @@ public class AnalyzeDocumentService {
 
         final String answer = chatModelService.getAnswer(Map.of("documents", buildPromptContext(similarChunks), "question", question), "classpath:prompt.st");
 
-        return new Answer(answer, documents, avgConfidence);
+        final Answer answerObj = new Answer(answer, documents, avgConfidence);
+
+        chatHistoryRepository.save(ChatHistory.builder()
+                .botMessage(answerObj)
+                .userMessage(question)
+                .build());
+
+        return answerObj;
     }
 
     private String buildPromptContext(List<ChunkProjection> chunks) {

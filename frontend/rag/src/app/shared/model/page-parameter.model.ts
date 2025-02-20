@@ -31,10 +31,11 @@ export class PageParameter {
   }
 
   public static ofPage(page: number): PageParameter {
-    return new PageParameter(page, 20);
+    return new PageParameter(page, 10);
   }
 
   public static ofPageSize(page: number, size: number): PageParameter {
     return new PageParameter(page, size);
   }
+
 }
