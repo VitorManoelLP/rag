@@ -7,5 +7,18 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'rag';
+
+  menuItems = [
+    {
+      label: 'Documentos',
+      icon: 'pi pi-file',
+      routerLink: '/documents'
+    },
+    {
+      label: 'Assistente de documentos',
+      icon: 'pi pi-sparkles',
+      routerLink: '/assistant'
+    }
+  ];
+
 }

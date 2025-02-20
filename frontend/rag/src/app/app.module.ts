@@ -34,4 +34,5 @@ import Aura from '@primeng/themes/aura';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

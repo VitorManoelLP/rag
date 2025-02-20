@@ -7,6 +7,10 @@ const routes: Routes = [
     loadComponent: () => import('./features/documents/documents.component').then(c => c.DocumentsComponent)
   },
   {
+    path: 'assistant',
+    loadComponent: () => import('./features/assistant/assistant.component').then(c => c.AssistantComponent)
+  },
+  {
     path: '',
     redirectTo: 'documents',
     pathMatch: 'full'

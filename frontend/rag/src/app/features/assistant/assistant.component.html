@@ -1,0 +1,83 @@
+<div class="chat-container">
+
+  <main class="chat-main">
+    <div #chatContainer class="messages-container">
+
+      <div *ngIf="messages.length === 0" class="empty-state">
+        <h2>Como posso te ajudar?</h2>
+      </div>
+
+      <div *ngFor="let message of messages"
+           class="message-wrapper"
+           [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
+
+        <div class="message-content">
+          <div class="avatar" *ngIf="message.sender === 'bot'">
+            <span class="avatar-icon">AI</span>
+          </div>
+          <div class="avatar user-avatar" *ngIf="message.sender === 'user'">
+            <span class="avatar-icon">Você</span>
+          </div>
+          <div class="message-bubble">
+            <p>{{message.content}}</p>
+            <div class="used-documents" *ngIf="message.sender === 'bot' && message.usedDocuments && message.usedDocuments.length > 0">
+              <div class="documents-header">
+                <span class="documents-icon"><i class="pi pi-file-pdf"></i></span>
+                <span>Documentos usados nessa resposta:</span>
+                <span class="confidence-indicator" *ngIf="message.confidence">
+                  {{(message.confidence * 100).toFixed(0)}}% confiabilidade
+                </span>
+              </div>
+              <ul class="documents-list">
+                <li *ngFor="let doc of message.usedDocuments">
+                  <i class="pi pi-file-pdf"></i> {{doc}}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isProcessing" class="message-wrapper bot-message">
+        <div class="message-content">
+          <div class="avatar">
+            <span class="avatar-icon">AI</span>
+          </div>
+          <div class="message-bubble processing">
+            <p-progressSpinner [style]="{width: '20px', height: '20px'}"
+                               styleClass="custom-spinner"
+                               strokeWidth="4"></p-progressSpinner>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="input-container">
+      <form class="message-form" (submit)="$event.preventDefault(); sendMessage()">
+        <div class="input-wrapper">
+
+          <textarea
+            [(ngModel)]="newMessage"
+            #autosize
+            placeholder="Mensagem"
+            name="messageInput"
+            class="custom-textarea"
+            rows="1"
+            (input)="adjustTextareaHeight(autosize)"
+            (keyup)="handleKeyUp($event)"></textarea>
+
+          <button
+            type="submit"
+            pButton
+            [disabled]="newMessage.trim() === ''"
+            class="send-button">
+            <i class="pi pi-arrow-up"></i>
+          </button>
+
+        </div>
+      </form>
+
+    </div>
+  </main>
+</div>

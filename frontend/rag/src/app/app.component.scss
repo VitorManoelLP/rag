@@ -1,0 +1,105 @@
+$sidebar-width: 280px;
+$primary-color: #3f51b5;
+$hover-color: #f0f4ff;
+$text-color: #333;
+$active-text-color: $primary-color;
+$transition-speed: 0.3s;
+
+.app-container {
+  display: flex;
+  background-color: #f5f7fa;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
+  margin-left: 280px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.sidebar {
+  width: $sidebar-width;
+  height: 100vh;
+  background-color: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  .sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+
+    h2 {
+      margin: 0;
+      color: $primary-color;
+      font-size: 1.4rem;
+      font-weight: 500;
+    }
+  }
+
+  .sidebar-menu {
+    flex: 1;
+    padding: 15px 0;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        cursor: pointer;
+        transition: background-color $transition-speed;
+
+        &:hover {
+          background-color: $hover-color;
+        }
+
+        &.active {
+          border-left: 4px solid $primary-color;
+          background-color: $hover-color;
+
+          .menu-item {
+            span, i {
+              color: $active-text-color;
+              font-weight: 500;
+            }
+          }
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          padding: 15px 20px;
+
+          i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            color: $text-color;
+            transition: color $transition-speed;
+          }
+
+          span {
+            color: $text-color;
+            font-size: 1rem;
+            transition: color $transition-speed;
+          }
+        }
+      }
+    }
+  }
+}
+
+:host ::ng-deep app-root {
+  display: flex;
+
+  router-outlet + * {
+    margin-left: $sidebar-width;
+    width: calc(100% - #{$sidebar-width});
+  }
+}
