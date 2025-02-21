@@ -1,10 +1,12 @@
 package com.rag.demo.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rag.demo.converter.AnswerConverter;
 import com.rag.demo.dto.Answer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.validation.constraints.NotNull;
@@ -27,6 +29,11 @@ public class ChatHistory {
 
     @Column(name = "user_message")
     private String userMessage;
+
+    @JsonIgnore
+    @JdbcTypeCode(10000)
+    @Column(columnDefinition = "vector(1536)", name = "embedding")
+    private float[] embeddingUserMessage;
 
     @Convert(converter = AnswerConverter.class)
     @Column(name = "bot_message")

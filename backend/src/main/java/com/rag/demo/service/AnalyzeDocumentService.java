@@ -1,22 +1,22 @@
 package com.rag.demo.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rag.demo.domain.ChatHistory;
 import com.rag.demo.domain.Document;
 import com.rag.demo.dto.Answer;
 import com.rag.demo.dto.ChunkProjection;
+import com.rag.demo.dto.HistoryProjection;
 import com.rag.demo.repository.ChatHistoryRepository;
 import com.rag.demo.repository.DocumentChunkRepository;
 import com.rag.demo.repository.DocumentRepository;
 import com.rag.demo.util.ChunkUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,13 +29,32 @@ public class AnalyzeDocumentService {
     private final DocumentChunkRepository documentChunkRepository;
     private final DocumentRepository documentRepository;
     private final ChatHistoryRepository chatHistoryRepository;
+    private final ObjectMapper objectMapper;
 
+    @SneakyThrows
     public Answer analyze(String question) {
 
         final float[] questionEmbedded = embeddingModel.embed(question);
 
+        final String embedding = ChunkUtils.chunkToStr(questionEmbedded);
+
+        Optional<HistoryProjection> similarEmbedding = chatHistoryRepository.findSimilarEmbedding(embedding);
+
+        if (similarEmbedding.isPresent() && similarEmbedding.get().getSimilarity() > 0.9) {
+
+            final Answer answer = objectMapper.readValue(similarEmbedding.get().getAnswer(), Answer.class);
+
+            chatHistoryRepository.save(ChatHistory.builder()
+                    .embeddingUserMessage(questionEmbedded)
+                    .botMessage(answer)
+                    .userMessage(question)
+                    .build());
+
+            return answer;
+        }
+
         final List<ChunkProjection> similarChunks = documentChunkRepository
-                .findSimilarChunks(ChunkUtils.chunkToStr(questionEmbedded), 5);
+                .findSimilarChunks(embedding, 5);
 
         if (similarChunks.isEmpty()) {
             throw new IllegalArgumentException("No documents found to analyze");
@@ -60,6 +79,7 @@ public class AnalyzeDocumentService {
         final Answer answerObj = new Answer(answer, documents, avgConfidence);
 
         chatHistoryRepository.save(ChatHistory.builder()
+                .embeddingUserMessage(questionEmbedded)
                 .botMessage(answerObj)
                 .userMessage(question)
                 .build());

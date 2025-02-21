@@ -1,0 +1,1 @@
+ALTER TABLE chat_history ADD COLUMN IF NOT EXISTS embedding vector(1536);
