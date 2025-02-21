@@ -3,10 +3,8 @@ package com.rag.demo.service;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
-import com.rag.demo.dto.Chunk;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -20,22 +18,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PdfEmbeddingProcessorService {
 
-    private final EmbeddingModel embeddingModel;
-
     @SneakyThrows
-    public List<Chunk> getChunksTextFromDocument(@NotNull byte[] content) {
-
+    public List<String> getChunksTextFromDocument(@NotNull byte[] content) {
         final String fullText = extractTextFromPdf(content);
-
-        final List<String> textChunks = createTextChunks(fullText);
-
-        final List<Chunk> embeddings = new ArrayList<>();
-
-        for (String chunk : textChunks) {
-            embeddings.add(new Chunk(embeddingModel.embed(chunk), chunk));
-        }
-
-        return embeddings;
+        return createTextChunks(fullText);
     }
 
     @SneakyThrows

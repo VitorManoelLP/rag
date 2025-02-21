@@ -1,103 +1,58 @@
 package com.rag.demo.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rag.demo.domain.ChatHistory;
-import com.rag.demo.domain.Document;
 import com.rag.demo.dto.Answer;
-import com.rag.demo.dto.ChunkProjection;
-import com.rag.demo.dto.HistoryProjection;
 import com.rag.demo.repository.ChatHistoryRepository;
-import com.rag.demo.repository.DocumentChunkRepository;
-import com.rag.demo.repository.DocumentRepository;
-import com.rag.demo.util.ChunkUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class AnalyzeDocumentService {
 
-    private final EmbeddingModel embeddingModel;
-    private final ChatModelService chatModelService;
-    private final DocumentChunkRepository documentChunkRepository;
-    private final DocumentRepository documentRepository;
+    private final ChatModel chatModel;
     private final ChatHistoryRepository chatHistoryRepository;
-    private final ObjectMapper objectMapper;
+    private final VectorStore vectorStore;
 
     @SneakyThrows
     public Answer analyze(String question) {
 
-        final float[] questionEmbedded = embeddingModel.embed(question);
+        final BeanOutputConverter<Answer> converter = new BeanOutputConverter<>(Answer.class);
 
-        final String embedding = ChunkUtils.chunkToStr(questionEmbedded);
+        final List<Document> documents = vectorStore.similaritySearch(SearchRequest.builder().topK(5).build());
 
-        Optional<HistoryProjection> similarEmbedding = chatHistoryRepository.findSimilarEmbedding(embedding);
-
-        if (similarEmbedding.isPresent() && similarEmbedding.get().getSimilarity() > 0.9) {
-
-            final Answer answer = objectMapper.readValue(similarEmbedding.get().getAnswer(), Answer.class);
-
-            chatHistoryRepository.save(ChatHistory.builder()
-                    .embeddingUserMessage(questionEmbedded)
-                    .botMessage(answer)
-                    .userMessage(question)
-                    .build());
-
-            return answer;
+        if (Objects.isNull(documents)) {
+            return new Answer("No documents found to analyze", List.of(), 0.0);
         }
 
-        final List<ChunkProjection> similarChunks = documentChunkRepository
-                .findSimilarChunks(embedding, 5);
+        final PromptTemplate promptTemplate = new PromptTemplate(Files.readString(ResourceUtils.getFile("classpath:prompt.st").toPath()));
 
-        if (similarChunks.isEmpty()) {
-            throw new IllegalArgumentException("No documents found to analyze");
-        }
+        final Prompt prompt = promptTemplate.create(Map.of("question", question, "format", converter.getFormat(), "documents", documents));
 
-        final Set<UUID> documentsAnalyzed = similarChunks.stream()
-                .map(ChunkProjection::getDocumentId)
-                .collect(Collectors.toSet());
-
-        final List<String> documents = documentRepository.findAllById(documentsAnalyzed)
-                .stream()
-                .map(Document::getName)
-                .toList();
-
-        final double avgConfidence = similarChunks.stream()
-                .mapToDouble(ChunkProjection::getSimilarity)
-                .average()
-                .orElse(0.0);
-
-        final String answer = chatModelService.getAnswer(Map.of("documents", buildPromptContext(similarChunks), "question", question), "classpath:prompt.st");
-
-        final Answer answerObj = new Answer(answer, documents, avgConfidence);
+        final Answer answer = converter.convert(Objects.requireNonNull(chatModel.call(prompt).getResult().getOutput().getText()));
 
         chatHistoryRepository.save(ChatHistory.builder()
-                .embeddingUserMessage(questionEmbedded)
-                .botMessage(answerObj)
                 .userMessage(question)
+                .botMessage(answer)
                 .build());
 
-        return answerObj;
-    }
-
-    private String buildPromptContext(List<ChunkProjection> chunks) {
-
-        StringBuilder context = new StringBuilder();
-
-        for (int i = 0; i < chunks.size(); i++) {
-            ChunkProjection chunk = chunks.get(i);
-            context.append("Documento ").append(i + 1).append(": ");
-            context.append(chunk.getContent()).append("\n\n");
-        }
-
-        return context.toString();
+        return answer;
     }
 
 }

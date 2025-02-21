@@ -1,7 +1,6 @@
 package com.rag.demo.resource;
 
 import com.rag.demo.domain.Document;
-import com.rag.demo.domain.DocumentChunk;
 import com.rag.demo.extension.TestContainerExtension;
 import com.rag.demo.repository.DocumentRepository;
 import org.assertj.core.api.Assertions;
@@ -49,17 +48,6 @@ public class DocumentResourceIntTest extends TestContainerExtension {
                 .andExpect(status().isCreated());
 
         final Document document = documentRepository.findAll().stream().findFirst().get();
-
-        Assertions.assertThat(document.getChunks())
-                .isNotEmpty()
-                .extracting(DocumentChunk::getContent)
-                .contains("PDF de ExPDF de Exemploemplo\n" +
-                        "PDF de ExPDF de Exemploemplo\n" +
-                        "PDF de ExPDF de Exemploemplo\n" +
-                        "PDF de ExPDF de Exemploemplo\n" +
-                        "PDF de ExPDF de Exemploemplo\n" +
-                        "PDF de ExPDF de Exemploemplo\n" +
-                        "PDF de ExPDF de Exemploemplo");
 
         Assertions.assertThat(document.getHash()).isEqualTo("6f088873b84cb8c176d012969977430e3f3a692222d6e26f596644a46e392dc7");
         Assertions.assertThat(document.getName()).isEqualTo("test-document.pdf");
