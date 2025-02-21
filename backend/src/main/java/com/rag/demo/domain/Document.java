@@ -34,9 +34,4 @@ public class Document {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @JsonIgnoreProperties(value = {"chunk", "content"})
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "id_document")
-    private final List<DocumentChunk> chunks = new ArrayList<>();
-
 }
